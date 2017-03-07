@@ -1,0 +1,91 @@
+# coding=utf-8
+__author__ = 'JoRay'
+
+import pymysql.cursors
+from docx import Document
+from datetime import datetime
+from snownlp import SnowNLP
+
+config = {
+    'host': 'localhost',
+    'port': 3306,
+    'user': 'root',
+    'password': 'glowfly17',
+    'db': 'local_test',
+    'charset': 'utf8mb4',
+    'cursorclass': pymysql.cursors.DictCursor,
+}
+
+# Connect to the database
+connection = pymysql.connect(**config)
+
+# str = 'corp_sgjy  corp_sgxf  corp_zcxm  corp_clst  corp_clyx  corp_ysslc  corp_lqjym  corp_zpxw  corp_pzjh  corp_pyfy  corp_ycblb  corp_dzld  corp_ysda  corp_lz  corp_ysqy  corp_lyslc  corp_dpxr  corp_hrgm  corp_cwdd  corp_qdmys  corp_qdslqy  corp_lcmys  corp_lcslqy  corp_lcsjg  corp_wfslc  corp_sgsjg';
+# corp_str = str.split('  ')
+# name = '''
+# 潍坊市寿光金玉米淀粉
+# 潍坊寿光新丰淀粉
+# 潍坊市诸城兴贸淀粉
+# 潍坊市昌乐盛泰
+# 潍坊市昌乐英轩实业
+# 临沂市沂水地区饲料厂
+# 聊城市临清金玉米
+# 滨州市邹平西王
+# 滨州金汇
+# 德州市平原福洋生物
+# 德州禹城保龄宝
+# 德州地区粮点新玉米收购价格
+# 临沂市沂水大地玉米
+# 临沂市鲁洲集团山东公司
+# 临沂市沂水青援淀粉
+# 临沂地区饲料厂
+# 山东泰安东平祥瑞药业
+# 恒仁工贸有限公司
+# 菏泽成武大地
+# 青岛地区贸易商
+# 青岛地区饲料企业
+# 聊城地区贸易商
+# 聊城地区饲料企业
+# 聊城地区深加工企业
+# 潍坊地区饲料厂
+# 寿光地区深加工
+# '''
+# corp_name = name.strip().split('\n')
+# try:
+#     with connection.cursor() as cursor:
+#         # 执行sql语句，进行查询
+#         if len(corp_name) != len(corp_str):
+#             print("数组长度不相等")
+#         else:
+#             for i in range(len(corp_name)):
+#
+#                 sql = ' INSERT INTO maize_corp_name (maize_corp_code, maize_corp_name) VALUES (%s,%s)'
+#                 cursor.execute(sql,(corp_str[i],corp_name[i]))
+#             # 获取查询结果
+#
+#     # 没有设置默认自动提交，需要主动提交，以保存所执行的语句
+#     connection.commit()
+#
+# finally:
+#     connection.close();
+
+try:
+    with connection.cursor() as cursor:
+        sql = 'select maize_corp_code, maize_corp_name from maize_corp_name'
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        corp_dict = {}
+        for corp in result:
+            corp_dict[corp['maize_corp_code']] = corp['maize_corp_name']
+        sql = ''
+        content = []
+        for (k,v) in corp_dict.items():
+            sql += k
+            sql += '=%s, '
+            content.append(v)
+
+        print(sql)
+        print(content)
+
+finally:
+    connection.close()
+
